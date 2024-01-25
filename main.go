@@ -1,20 +1,17 @@
 package main
 
 import (
-	"fmt"
-	"log"
+	projectcontroller "porto-be/controllers/projectController"
+	"porto-be/models"
 
-	"gorm.io/driver/mysql"
-	"gorm.io/gorm"
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	dsn := "root:password@tcp(127.0.0.1:3306)/porto_be?charset=utf8mb4&parseTime=True&loc=Local"
-	_, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	r := gin.Default()
+	models.DatabaseConnection()
 
-	if err != nil {
-		log.Fatal("DB Connection failed!")
-	}
+	r.GET("/api/projects", projectcontroller.FindAll)
 
-	fmt.Println("Database connection successful!")
+	r.Run()
 }
