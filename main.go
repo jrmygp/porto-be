@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
-	"porto-be/forms"
+	"porto-be/controllers"
 	"porto-be/models"
 	"porto-be/repositories"
 	"porto-be/services"
@@ -15,7 +15,6 @@ import (
 )
 
 func main() {
-	router := gin.Default()
 
 	err := godotenv.Load()
 	if err != nil {
@@ -40,14 +39,16 @@ func main() {
 
 	projectRepository := repositories.NewRepository(db)
 	projectService := services.NewService(projectRepository)
+	projectController := controllers.NewController(projectService)
 
-	projectForm := forms.ProjectForm{
-		Title:       "KSS Web App",
-		Description: "Web app for KSS",
-		Url:         "www.facebook.com",
-	}
+	router := gin.Default()
+	projectRoutes := router.Group("/project")
 
-	projectService.Create(projectForm)
+	projectRoutes.GET("/", projectController.FindAllProjects)
+	projectRoutes.GET("/:id", projectController.FindProjectByID)
+	projectRoutes.POST("/", projectController.CreateNewProject)
+	projectRoutes.PATCH("/:id", projectController.EditProject)
+	projectRoutes.DELETE("/:id", projectController.DeleteProject)
 
 	router.Run()
 }

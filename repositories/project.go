@@ -9,7 +9,9 @@ import (
 type Repository interface {
 	FindAll() ([]models.Project, error)
 	FindByID(ID int) (models.Project, error)
-	Create(book models.Project) (models.Project, error)
+	Create(project models.Project) (models.Project, error)
+	Update(project models.Project) (models.Project, error)
+	Delete(project models.Project) (models.Project, error)
 }
 
 type repository struct {
@@ -39,5 +41,15 @@ func (r *repository) FindByID(ID int) (models.Project, error) {
 func (r *repository) Create(project models.Project) (models.Project, error) {
 	err := r.db.Create(&project).Error
 
+	return project, err
+}
+
+func (r *repository) Update(project models.Project) (models.Project, error) {
+	err := r.db.Save(&project).Error
+	return project, err
+}
+
+func (r *repository) Delete(project models.Project) (models.Project, error) {
+	err := r.db.Delete(project).Error
 	return project, err
 }

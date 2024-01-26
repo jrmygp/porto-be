@@ -9,7 +9,9 @@ import (
 type Service interface {
 	FindAll() ([]models.Project, error)
 	FindByID(ID int) (models.Project, error)
-	Create(book forms.ProjectForm) (models.Project, error)
+	Create(project forms.ProjectForm) (models.Project, error)
+	Update(ID int, project forms.ProjectForm) (models.Project, error)
+	Delete(ID int) (models.Project, error)
 }
 
 type service struct {
@@ -31,7 +33,6 @@ func (s *service) FindByID(ID int) (models.Project, error) {
 }
 
 func (s *service) Create(projectForm forms.ProjectForm) (models.Project, error) {
-
 	// convert yang dari bentukan awalnya sebuah form jadiin ke bentuk model
 	project := models.Project{
 		Title:       projectForm.Title,
@@ -41,4 +42,22 @@ func (s *service) Create(projectForm forms.ProjectForm) (models.Project, error) 
 
 	newProject, err := s.repository.Create(project)
 	return newProject, err
+}
+
+func (s *service) Update(ID int, projectForm forms.ProjectForm) (models.Project, error) {
+	p, _ := s.repository.FindByID(ID)
+
+	p.Title = projectForm.Title
+	p.Description = projectForm.Description
+	p.Url = projectForm.Url
+
+	newProject, err := s.repository.Update(p)
+	return newProject, err
+}
+
+func (s *service) Delete(ID int) (models.Project, error) {
+	book, _ := s.repository.FindByID(ID)
+	newBook, err := s.repository.Delete(book)
+
+	return newBook, err
 }
