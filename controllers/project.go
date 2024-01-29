@@ -3,6 +3,7 @@ package controllers
 import (
 	"fmt"
 	"net/http"
+	"path/filepath"
 	"porto-be/forms"
 	"porto-be/models"
 	"porto-be/responses"
@@ -76,18 +77,28 @@ func (h *controller) FindProjectByID(c *gin.Context) {
 func (h *controller) CreateNewProject(c *gin.Context) {
 	var projectForm forms.ProjectForm
 
-	err := c.ShouldBindJSON(&projectForm)
+	err := c.ShouldBind(&projectForm)
 	if err != nil {
 
-		errorMessages := []string{}
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 
-		for _, e := range err.(validator.ValidationErrors) {
-			message := fmt.Sprintf("Error on field %s, condition %s", e.Field(), e.ActualTag())
-			errorMessages = append(errorMessages, message)
-		}
-
+	// Handle file upload
+	file, err := c.FormFile("url")
+	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"errors": errorMessages,
+			"error": "File upload failed",
+		})
+		return
+	}
+
+	// Save the file to the server
+	destination := "public/project/"
+	filePath := filepath.Join(destination, file.Filename)
+	if err := c.SaveUploadedFile(file, filePath); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Failed to save file",
 		})
 		return
 	}

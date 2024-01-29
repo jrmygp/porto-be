@@ -50,5 +50,10 @@ func main() {
 	projectRoutes.PATCH("/:id", projectController.EditProject)
 	projectRoutes.DELETE("/:id", projectController.DeleteProject)
 
+	router.Static("/public", "./public")
+
+	fmt.Println("jeremy loves andre to the heart")
+	router.MaxMultipartMemory = 8 << 20 // 8 MiB
+
 	router.Run()
 }

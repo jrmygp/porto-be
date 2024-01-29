@@ -1,6 +1,8 @@
 package services
 
 import (
+	"mime/multipart"
+	"path/filepath"
 	"porto-be/forms"
 	"porto-be/models"
 	"porto-be/repositories"
@@ -22,6 +24,15 @@ func NewService(repository repositories.Repository) *service {
 	return &service{repository}
 }
 
+// Private function
+func convertFileToPath(file *multipart.FileHeader) string {
+	baseDirectory := "public/project/"
+
+	filePath := filepath.Join(baseDirectory, file.Filename)
+
+	return filePath
+}
+
 func (s *service) FindAll() ([]models.Project, error) {
 	projects, err := s.repository.FindAll()
 	return projects, err
@@ -37,7 +48,7 @@ func (s *service) Create(projectForm forms.ProjectForm) (models.Project, error) 
 	project := models.Project{
 		Title:       projectForm.Title,
 		Description: projectForm.Description,
-		Url:         projectForm.Url,
+		Url:         convertFileToPath(projectForm.Url),
 	}
 
 	newProject, err := s.repository.Create(project)
@@ -49,7 +60,7 @@ func (s *service) Update(ID int, projectForm forms.ProjectForm) (models.Project,
 
 	p.Title = projectForm.Title
 	p.Description = projectForm.Description
-	p.Url = projectForm.Url
+	p.Url = convertFileToPath(projectForm.Url)
 
 	newProject, err := s.repository.Update(p)
 	return newProject, err
