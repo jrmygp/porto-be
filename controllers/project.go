@@ -4,22 +4,23 @@ import (
 	"fmt"
 	"net/http"
 	"path/filepath"
-	"porto-be/forms"
 	"porto-be/models"
-	"porto-be/responses"
-	"porto-be/services"
+	requests "porto-be/requests/project"
+	responses "porto-be/responses/project"
+	services "porto-be/services/project"
+
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 )
 
-type controller struct {
+type ProjectController struct {
 	service services.Service
 }
 
-func NewController(service services.Service) *controller {
-	return &controller{service}
+func NewController(service services.Service) *ProjectController {
+	return &ProjectController{service}
 }
 
 // Private function
@@ -32,7 +33,7 @@ func convertResponse(o models.Project) responses.ProjectResponse {
 	}
 }
 
-func (h *controller) FindAllProjects(c *gin.Context) {
+func (h *ProjectController) FindAllProjects(c *gin.Context) {
 	projects, err := h.service.FindAll()
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -54,7 +55,7 @@ func (h *controller) FindAllProjects(c *gin.Context) {
 	})
 }
 
-func (h *controller) FindProjectByID(c *gin.Context) {
+func (h *ProjectController) FindProjectByID(c *gin.Context) {
 	idString := c.Param("id")
 	// convert id from string to int
 	id, _ := strconv.Atoi(idString)
@@ -74,8 +75,8 @@ func (h *controller) FindProjectByID(c *gin.Context) {
 	})
 }
 
-func (h *controller) CreateNewProject(c *gin.Context) {
-	var projectForm forms.ProjectForm
+func (h *ProjectController) CreateNewProject(c *gin.Context) {
+	var projectForm requests.CreateProjectRequest
 
 	err := c.ShouldBind(&projectForm)
 	if err != nil {
@@ -116,8 +117,8 @@ func (h *controller) CreateNewProject(c *gin.Context) {
 	})
 }
 
-func (h *controller) EditProject(c *gin.Context) {
-	var projectForm forms.ProjectForm
+func (h *ProjectController) EditProject(c *gin.Context) {
+	var projectForm requests.CreateProjectRequest
 
 	err := c.ShouldBindJSON(&projectForm)
 	if err != nil {
@@ -149,7 +150,7 @@ func (h *controller) EditProject(c *gin.Context) {
 	})
 }
 
-func (h *controller) DeleteProject(c *gin.Context) {
+func (h *ProjectController) DeleteProject(c *gin.Context) {
 	id, _ := strconv.Atoi("id")
 	project, err := h.service.Delete(id)
 	if err != nil {

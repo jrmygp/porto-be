@@ -6,14 +6,6 @@ import (
 	"gorm.io/gorm"
 )
 
-type Repository interface {
-	FindAll() ([]models.Project, error)
-	FindByID(ID int) (models.Project, error)
-	Create(project models.Project) (models.Project, error)
-	Update(project models.Project) (models.Project, error)
-	Delete(project models.Project) (models.Project, error)
-}
-
 type repository struct {
 	db *gorm.DB
 }

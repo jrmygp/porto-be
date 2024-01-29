@@ -3,18 +3,10 @@ package services
 import (
 	"mime/multipart"
 	"path/filepath"
-	"porto-be/forms"
 	"porto-be/models"
-	"porto-be/repositories"
+	repositories "porto-be/repositories/project"
+	requests "porto-be/requests/project"
 )
-
-type Service interface {
-	FindAll() ([]models.Project, error)
-	FindByID(ID int) (models.Project, error)
-	Create(project forms.ProjectForm) (models.Project, error)
-	Update(ID int, project forms.ProjectForm) (models.Project, error)
-	Delete(ID int) (models.Project, error)
-}
 
 type service struct {
 	repository repositories.Repository
@@ -43,7 +35,7 @@ func (s *service) FindByID(ID int) (models.Project, error) {
 	return project, err
 }
 
-func (s *service) Create(projectForm forms.ProjectForm) (models.Project, error) {
+func (s *service) Create(projectForm requests.CreateProjectRequest) (models.Project, error) {
 	// convert yang dari bentukan awalnya sebuah form jadiin ke bentuk model
 	project := models.Project{
 		Title:       projectForm.Title,
@@ -55,7 +47,7 @@ func (s *service) Create(projectForm forms.ProjectForm) (models.Project, error) 
 	return newProject, err
 }
 
-func (s *service) Update(ID int, projectForm forms.ProjectForm) (models.Project, error) {
+func (s *service) Update(ID int, projectForm requests.CreateProjectRequest) (models.Project, error) {
 	p, _ := s.repository.FindByID(ID)
 
 	p.Title = projectForm.Title

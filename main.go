@@ -2,58 +2,41 @@ package main
 
 import (
 	"fmt"
-	"os"
+	"net/http"
+	"porto-be/config"
 	"porto-be/controllers"
 	"porto-be/models"
-	"porto-be/repositories"
-	"porto-be/services"
-
-	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
-	"gorm.io/driver/mysql"
-	"gorm.io/gorm"
+	projectRepository "porto-be/repositories/project"
+	"porto-be/routers"
+	projectService "porto-be/services/project"
 )
 
 func main() {
+	// Database
+	db := config.DatabaseConnection()
+	db.AutoMigrate(&models.Project{})
 
-	err := godotenv.Load()
-	if err != nil {
-		fmt.Println("Error loading .env file")
+	// Repository
+	projectRepository := projectRepository.NewRepository(db)
+
+	// Service
+	projectService := projectService.NewService(projectRepository)
+
+	// Controller
+	projectController := controllers.NewController(projectService)
+
+	// Router
+	routes := routers.NewRouter(projectController)
+
+	server := &http.Server{
+		Addr:    ":8080",
+		Handler: routes,
 	}
 
-	dbUser := os.Getenv("DB_USER")
-	dbPassword := os.Getenv("DB_PASSWORD")
-	dbHost := os.Getenv("DB_HOST")
-	dbPort := os.Getenv("DB_PORT")
-	dbName := os.Getenv("DB_NAME")
-
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
-		dbUser, dbPassword, dbHost, dbPort, dbName)
-
-	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	err := server.ListenAndServe()
 	if err != nil {
 		panic(err)
 	}
 
-	db.AutoMigrate(&models.Project{})
-
-	projectRepository := repositories.NewRepository(db)
-	projectService := services.NewService(projectRepository)
-	projectController := controllers.NewController(projectService)
-
-	router := gin.Default()
-	projectRoutes := router.Group("/project")
-
-	projectRoutes.GET("/", projectController.FindAllProjects)
-	projectRoutes.GET("/:id", projectController.FindProjectByID)
-	projectRoutes.POST("/", projectController.CreateNewProject)
-	projectRoutes.PATCH("/:id", projectController.EditProject)
-	projectRoutes.DELETE("/:id", projectController.DeleteProject)
-
-	router.Static("/public", "./public")
-
 	fmt.Println("jeremy loves andre to the heart")
-	router.MaxMultipartMemory = 8 << 20 // 8 MiB
-
-	router.Run()
 }
