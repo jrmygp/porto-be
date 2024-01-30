@@ -2,13 +2,14 @@ package main
 
 import (
 	"fmt"
-	"net/http"
 	"porto-be/config"
 	"porto-be/controllers"
 	"porto-be/models"
 	projectRepository "porto-be/repositories/project"
-	"porto-be/routers"
 	projectService "porto-be/services/project"
+
+	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
@@ -26,17 +27,20 @@ func main() {
 	projectController := controllers.NewController(projectService)
 
 	// Router
-	routes := routers.NewRouter(projectController)
+	router := gin.Default()
+	router.Use(cors.Default())
 
-	server := &http.Server{
-		Addr:    ":8080",
-		Handler: routes,
-	}
+	router.Static("/public", "./public")
+	router.MaxMultipartMemory = 8 << 20 // 8 MiB
 
-	err := server.ListenAndServe()
-	if err != nil {
-		panic(err)
-	}
+	projectRouter := router.Group("/project")
+	projectRouter.GET("", projectController.FindAllProjects)
+	projectRouter.GET("/:id", projectController.FindProjectByID)
+	projectRouter.POST("", projectController.CreateNewProject)
+	projectRouter.PATCH("/:id", projectController.EditProject)
+	projectRouter.DELETE("/:id", projectController.DeleteProject)
 
 	fmt.Println("jeremy loves andre to the heart")
+
+	router.Run(":8082")
 }
