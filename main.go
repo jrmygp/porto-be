@@ -6,7 +6,9 @@ import (
 	"porto-be/controllers"
 	"porto-be/models"
 	projectRepository "porto-be/repositories/project"
+	techRepository "porto-be/repositories/tech"
 	projectService "porto-be/services/project"
+	techService "porto-be/services/tech"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -19,12 +21,15 @@ func main() {
 
 	// Repository
 	projectRepository := projectRepository.NewRepository(db)
+	techRepository := techRepository.NewRepository(db)
 
 	// Service
 	projectService := projectService.NewService(projectRepository)
+	techService := techService.NewService(techRepository)
 
 	// Controller
-	projectController := controllers.NewController(projectService)
+	projectController := controllers.NewProjectController(projectService)
+	techController := controllers.NewTechController(techService)
 
 	// Router
 	router := gin.Default()
@@ -39,6 +44,13 @@ func main() {
 	projectRouter.POST("", projectController.CreateNewProject)
 	projectRouter.PATCH("/:id", projectController.EditProject)
 	projectRouter.DELETE("/:id", projectController.DeleteProject)
+
+	techRouter := router.Group("/tech")
+	techRouter.GET("", techController.FindAllTechs)
+	techRouter.GET("/:id", techController.FindTechByID)
+	techRouter.POST("", techController.CreateNewTech)
+	techRouter.PATCH("/:id", techController.EditTech)
+	techRouter.DELETE("/:id", techController.DeleteTech)
 
 	fmt.Println("jeremy loves andre to the heart")
 

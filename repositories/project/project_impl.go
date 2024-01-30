@@ -38,10 +38,12 @@ func (r *repository) Create(project models.Project) (models.Project, error) {
 
 func (r *repository) Update(project models.Project) (models.Project, error) {
 	err := r.db.Save(&project).Error
+
 	return project, err
 }
 
 func (r *repository) Delete(project models.Project) (models.Project, error) {
 	err := r.db.Delete(project).Error
+
 	return project, err
 }

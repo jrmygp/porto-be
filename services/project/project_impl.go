@@ -69,8 +69,8 @@ func (s *service) Update(ID int, projectRequest requests.UpdateProjectRequest) (
 }
 
 func (s *service) Delete(ID int) (models.Project, error) {
-	book, _ := s.repository.FindByID(ID)
-	newProject, err := s.repository.Delete(book)
+	project, _ := s.repository.FindByID(ID)
+	deletedProject, err := s.repository.Delete(project)
 
-	return newProject, err
+	return deletedProject, err
 }

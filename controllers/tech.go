@@ -4,38 +4,34 @@ import (
 	"net/http"
 	"path/filepath"
 	"porto-be/models"
-	requests "porto-be/requests/project"
+	requests "porto-be/requests/tech"
 	"porto-be/responses"
-	projectResponse "porto-be/responses/project"
-	services "porto-be/services/project"
-
+	techResponse "porto-be/responses/tech"
+	services "porto-be/services/tech"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
 
-type ProjectController struct {
+type TechController struct {
 	service services.Service
 }
 
-func NewProjectController(service services.Service) *ProjectController {
-	return &ProjectController{service}
+func NewTechController(service services.Service) *TechController {
+	return &TechController{service}
 }
 
-// Private function
-func convertProjectResponse(o models.Project) projectResponse.ProjectResponse {
-	return projectResponse.ProjectResponse{
-		ID:          o.ID,
-		Title:       o.Title,
-		Description: o.Description,
-		Url:         o.Url,
-		Image:       o.Image,
+func convertTechResponse(o models.Tech) techResponse.TechResponse {
+	return techResponse.TechResponse{
+		ID:    o.ID,
+		Title: o.Title,
+		Image: o.Image,
 	}
 }
 
-// Find All Project
-func (h *ProjectController) FindAllProjects(c *gin.Context) {
-	projects, err := h.service.FindAll()
+// Find All Tech
+func (h *TechController) FindAllTechs(c *gin.Context) {
+	techs, err := h.service.FindAll()
 	if err != nil {
 		webResponse := responses.Response{
 			Code:   http.StatusBadRequest,
@@ -43,33 +39,31 @@ func (h *ProjectController) FindAllProjects(c *gin.Context) {
 			Data:   err,
 		}
 		c.JSON(http.StatusBadRequest, webResponse)
-		return
 	}
 
-	var projectResponses []projectResponse.ProjectResponse
+	var techResponses []techResponse.TechResponse
 
-	for _, project := range projects {
-		response := convertProjectResponse(project)
+	for _, tech := range techs {
+		response := convertTechResponse(tech)
 
-		projectResponses = append(projectResponses, response)
+		techResponses = append(techResponses, response)
 	}
 
 	webResponse := responses.Response{
 		Code:   http.StatusOK,
 		Status: "OK",
-		Data:   projectResponses,
+		Data:   techResponses,
 	}
 
 	c.JSON(http.StatusOK, webResponse)
 }
 
-// Find Project By ID
-func (h *ProjectController) FindProjectByID(c *gin.Context) {
+// Find Tech By ID
+func (h *TechController) FindTechByID(c *gin.Context) {
 	idString := c.Param("id")
-	// convert id from string to int
 	id, _ := strconv.Atoi(idString)
 
-	project, err := h.service.FindByID(id)
+	tech, err := h.service.FindByID(id)
 	if err != nil {
 		webResponse := responses.Response{
 			Code:   http.StatusBadRequest,
@@ -83,17 +77,17 @@ func (h *ProjectController) FindProjectByID(c *gin.Context) {
 	webResponse := responses.Response{
 		Code:   http.StatusOK,
 		Status: "OK",
-		Data:   convertProjectResponse(project),
+		Data:   convertTechResponse(tech),
 	}
 
 	c.JSON(http.StatusOK, webResponse)
 }
 
-// Create New Project
-func (h *ProjectController) CreateNewProject(c *gin.Context) {
-	var projectForm requests.CreateProjectRequest
+// Create New Tech
+func (h *TechController) CreateNewTech(c *gin.Context) {
+	var techForm requests.CreateTechRequest
 
-	err := c.ShouldBind(&projectForm)
+	err := c.ShouldBind(&techForm)
 	if err != nil {
 		webResponse := responses.Response{
 			Code:   http.StatusBadRequest,
@@ -104,7 +98,6 @@ func (h *ProjectController) CreateNewProject(c *gin.Context) {
 		return
 	}
 
-	// Handle file upload
 	file, err := c.FormFile("image")
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -113,8 +106,7 @@ func (h *ProjectController) CreateNewProject(c *gin.Context) {
 		return
 	}
 
-	// Save the file to the server
-	destination := "public/project/"
+	destination := "public/tech/"
 	filePath := filepath.Join(destination, file.Filename)
 	if err := c.SaveUploadedFile(file, filePath); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -123,7 +115,7 @@ func (h *ProjectController) CreateNewProject(c *gin.Context) {
 		return
 	}
 
-	project, err := h.service.Create(projectForm)
+	tech, err := h.service.Create(techForm)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"errors": err,
@@ -134,17 +126,17 @@ func (h *ProjectController) CreateNewProject(c *gin.Context) {
 	webResponse := responses.Response{
 		Code:   http.StatusOK,
 		Status: "OK",
-		Data:   convertProjectResponse(project),
+		Data:   convertTechResponse(tech),
 	}
 
 	c.JSON(http.StatusOK, webResponse)
 }
 
 // Edit Project
-func (h *ProjectController) EditProject(c *gin.Context) {
-	var projectForm requests.UpdateProjectRequest
+func (h *TechController) EditTech(c *gin.Context) {
+	var techForm requests.UpdateTechRequest
 
-	err := c.ShouldBind(&projectForm)
+	err := c.ShouldBind(&techForm)
 	if err != nil {
 		webResponse := responses.Response{
 			Code:   http.StatusBadRequest,
@@ -155,10 +147,8 @@ func (h *ProjectController) EditProject(c *gin.Context) {
 		return
 	}
 
-	// Check if the image field is provided in the request
 	_, imageHeader, err := c.Request.FormFile("image")
 	if err == nil && imageHeader != nil {
-		// Handle file upload
 		file, err := c.FormFile("image")
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
@@ -167,8 +157,7 @@ func (h *ProjectController) EditProject(c *gin.Context) {
 			return
 		}
 
-		// Save the file to the server
-		destination := "public/project/"
+		destination := "public/tech/"
 		filePath := filepath.Join(destination, file.Filename)
 		if err := c.SaveUploadedFile(file, filePath); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
@@ -179,9 +168,8 @@ func (h *ProjectController) EditProject(c *gin.Context) {
 	}
 
 	idString := c.Param("id")
-	// convert id from string to int
 	id, _ := strconv.Atoi(idString)
-	project, err := h.service.Update(id, projectForm)
+	tech, err := h.service.Update(id, techForm)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"errors": err,
@@ -192,18 +180,18 @@ func (h *ProjectController) EditProject(c *gin.Context) {
 	webResponse := responses.Response{
 		Code:   http.StatusOK,
 		Status: "OK",
-		Data:   convertProjectResponse(project),
+		Data:   convertTechResponse(tech),
 	}
 
 	c.JSON(http.StatusOK, webResponse)
 }
 
-// Delete Project
-func (h *ProjectController) DeleteProject(c *gin.Context) {
+// Delete Tech
+func (h *TechController) DeleteTech(c *gin.Context) {
 	idString := c.Param("id")
 	id, _ := strconv.Atoi(idString)
 
-	project, err := h.service.Delete(id)
+	tech, err := h.service.Delete(id)
 	if err != nil {
 		webResponse := responses.Response{
 			Code:   http.StatusBadRequest,
@@ -217,7 +205,7 @@ func (h *ProjectController) DeleteProject(c *gin.Context) {
 	webResponse := responses.Response{
 		Code:   http.StatusOK,
 		Status: "OK",
-		Data:   convertProjectResponse(project),
+		Data:   convertTechResponse(tech),
 	}
 
 	c.JSON(http.StatusOK, webResponse)
