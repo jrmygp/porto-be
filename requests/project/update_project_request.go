@@ -5,5 +5,6 @@ import "mime/multipart"
 type UpdateProjectRequest struct {
 	Title       string                `form:"title"`
 	Description string                `form:"description"`
-	Url         *multipart.FileHeader `form:"url"`
+	Url         string                `form:"url"`
+	Image       *multipart.FileHeader `form:"image"`
 }

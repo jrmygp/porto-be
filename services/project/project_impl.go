@@ -35,24 +35,26 @@ func (s *service) FindByID(ID int) (models.Project, error) {
 	return project, err
 }
 
-func (s *service) Create(projectForm requests.CreateProjectRequest) (models.Project, error) {
+func (s *service) Create(projectRequest requests.CreateProjectRequest) (models.Project, error) {
 	// convert yang dari bentukan awalnya sebuah form jadiin ke bentuk model
 	project := models.Project{
-		Title:       projectForm.Title,
-		Description: projectForm.Description,
-		Url:         convertFileToPath(projectForm.Url),
+		Title:       projectRequest.Title,
+		Description: projectRequest.Description,
+		Url:         projectRequest.Url,
+		Image:       convertFileToPath(projectRequest.Image),
 	}
 
 	newProject, err := s.repository.Create(project)
 	return newProject, err
 }
 
-func (s *service) Update(ID int, projectForm requests.CreateProjectRequest) (models.Project, error) {
+func (s *service) Update(ID int, projectRequest requests.CreateProjectRequest) (models.Project, error) {
 	p, _ := s.repository.FindByID(ID)
 
-	p.Title = projectForm.Title
-	p.Description = projectForm.Description
-	p.Url = convertFileToPath(projectForm.Url)
+	p.Title = projectRequest.Title
+	p.Description = projectRequest.Description
+	p.Url = projectRequest.Url
+	p.Image = convertFileToPath(projectRequest.Image)
 
 	newProject, err := s.repository.Update(p)
 	return newProject, err

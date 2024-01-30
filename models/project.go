@@ -7,6 +7,7 @@ type Project struct {
 	Title       string
 	Description string
 	Url         string
+	Image       string
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 }
