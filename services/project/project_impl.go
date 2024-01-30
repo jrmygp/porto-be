@@ -48,13 +48,21 @@ func (s *service) Create(projectRequest requests.CreateProjectRequest) (models.P
 	return newProject, err
 }
 
-func (s *service) Update(ID int, projectRequest requests.CreateProjectRequest) (models.Project, error) {
+func (s *service) Update(ID int, projectRequest requests.UpdateProjectRequest) (models.Project, error) {
 	p, _ := s.repository.FindByID(ID)
 
-	p.Title = projectRequest.Title
-	p.Description = projectRequest.Description
-	p.Url = projectRequest.Url
-	p.Image = convertFileToPath(projectRequest.Image)
+	if projectRequest.Title != "" {
+		p.Title = projectRequest.Title
+	}
+	if projectRequest.Description != "" {
+		p.Description = projectRequest.Description
+	}
+	if projectRequest.Url != "" {
+		p.Url = projectRequest.Url
+	}
+	if projectRequest.Image != nil {
+		p.Image = convertFileToPath(projectRequest.Image)
+	}
 
 	newProject, err := s.repository.Update(p)
 	return newProject, err
@@ -62,7 +70,7 @@ func (s *service) Update(ID int, projectRequest requests.CreateProjectRequest) (
 
 func (s *service) Delete(ID int) (models.Project, error) {
 	book, _ := s.repository.FindByID(ID)
-	newBook, err := s.repository.Delete(book)
+	newProject, err := s.repository.Delete(book)
 
-	return newBook, err
+	return newProject, err
 }

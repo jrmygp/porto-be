@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"net/http"
 	"path/filepath"
 	"porto-be/models"
@@ -13,7 +12,6 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
 )
 
 type ProjectController struct {
@@ -144,23 +142,40 @@ func (h *ProjectController) CreateNewProject(c *gin.Context) {
 
 // Edit Project
 func (h *ProjectController) EditProject(c *gin.Context) {
-	var projectForm requests.CreateProjectRequest
+	var projectForm requests.UpdateProjectRequest
 
-	err := c.ShouldBindJSON(&projectForm)
+	err := c.ShouldBind(&projectForm)
 	if err != nil {
-		errorMessages := []string{}
-		for _, e := range err.(validator.ValidationErrors) {
-			message := fmt.Sprintf("Error on field %s, condition: %s", e.Field(), e.ActualTag())
-			errorMessages = append(errorMessages, message)
-		}
-
 		webResponse := responses.Response{
 			Code:   http.StatusBadRequest,
 			Status: "ERROR",
-			Data:   errorMessages,
+			Data:   err,
 		}
 		c.JSON(http.StatusBadRequest, webResponse)
 		return
+	}
+
+	// Check if the image field is provided in the request
+	_, imageHeader, err := c.Request.FormFile("image")
+	if err == nil && imageHeader != nil {
+		// Handle file upload
+		file, err := c.FormFile("image")
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"error": "File upload failed",
+			})
+			return
+		}
+
+		// Save the file to the server
+		destination := "public/project/"
+		filePath := filepath.Join(destination, file.Filename)
+		if err := c.SaveUploadedFile(file, filePath); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"error": "Failed to save file",
+			})
+			return
+		}
 	}
 
 	idString := c.Param("id")
