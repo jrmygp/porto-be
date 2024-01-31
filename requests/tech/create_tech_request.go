@@ -3,6 +3,7 @@ package requests
 import "mime/multipart"
 
 type CreateTechRequest struct {
-	Title string                `form:"title" binding:"required"`
-	Image *multipart.FileHeader `form:"image" binding:"required"`
+	Title      string                `form:"title" binding:"required"`
+	Image      *multipart.FileHeader `form:"image" binding:"required"`
+	Percentage int                   `form:"percentage" binding:"required"`
 }

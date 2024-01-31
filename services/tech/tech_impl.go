@@ -37,8 +37,9 @@ func (s *service) FindByID(ID int) (models.Tech, error) {
 
 func (s *service) Create(techRequest requests.CreateTechRequest) (models.Tech, error) {
 	tech := models.Tech{
-		Title: techRequest.Title,
-		Image: convertFileToPath(techRequest.Image),
+		Title:      techRequest.Title,
+		Image:      convertFileToPath(techRequest.Image),
+		Percentage: techRequest.Percentage,
 	}
 
 	newTech, err := s.repository.Create(tech)
@@ -52,7 +53,10 @@ func (s *service) Update(ID int, techRequest requests.UpdateTechRequest) (models
 		t.Title = techRequest.Title
 	}
 	if techRequest.Image != nil {
-		t.Title = convertFileToPath(techRequest.Image)
+		t.Image = convertFileToPath(techRequest.Image)
+	}
+	if techRequest.Percentage != 0 {
+		t.Percentage = techRequest.Percentage
 	}
 
 	newTech, err := s.repository.Update(t)

@@ -23,9 +23,10 @@ func NewTechController(service services.Service) *TechController {
 
 func convertTechResponse(o models.Tech) techResponse.TechResponse {
 	return techResponse.TechResponse{
-		ID:    o.ID,
-		Title: o.Title,
-		Image: o.Image,
+		ID:         o.ID,
+		Title:      o.Title,
+		Image:      o.Image,
+		Percentage: o.Percentage,
 	}
 }
 
