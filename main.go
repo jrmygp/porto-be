@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"porto-be/config"
 	"porto-be/controllers"
-	"porto-be/models"
 	projectRepository "porto-be/repositories/project"
 	skillRepository "porto-be/repositories/skill"
 	techRepository "porto-be/repositories/tech"
@@ -19,7 +18,6 @@ import (
 func main() {
 	// Database
 	db := config.DatabaseConnection()
-	db.AutoMigrate(&models.Project{})
 
 	// Repository
 	projectRepository := projectRepository.NewRepository(db)

@@ -42,6 +42,7 @@ func (s *service) Create(projectRequest requests.CreateProjectRequest) (models.P
 		Description: projectRequest.Description,
 		Url:         projectRequest.Url,
 		Image:       convertFileToPath(projectRequest.Image),
+		Stack_id:    projectRequest.Stack_id,
 	}
 
 	newProject, err := s.repository.Create(project)
@@ -62,6 +63,9 @@ func (s *service) Update(ID int, projectRequest requests.UpdateProjectRequest) (
 	}
 	if projectRequest.Image != nil {
 		p.Image = convertFileToPath(projectRequest.Image)
+	}
+	if len(projectRequest.Stack_id) > 0 {
+		p.Stack_id = projectRequest.Stack_id
 	}
 
 	newProject, err := s.repository.Update(p)

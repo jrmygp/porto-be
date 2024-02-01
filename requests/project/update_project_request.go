@@ -7,4 +7,5 @@ type UpdateProjectRequest struct {
 	Description string                `form:"description"`
 	Url         string                `form:"url"`
 	Image       *multipart.FileHeader `form:"image"`
+	Stack_id    []int                 `form:"stack_id"`
 }

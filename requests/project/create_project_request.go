@@ -7,4 +7,5 @@ type CreateProjectRequest struct {
 	Description string                `form:"description" binding:"required"`
 	Url         string                `form:"url"`
 	Image       *multipart.FileHeader `form:"image" binding:"required"`
+	Stack_id    []int                 `form:"stack_id" binding:"required"`
 }

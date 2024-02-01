@@ -30,8 +30,11 @@ func convertProjectResponse(o models.Project) projectResponse.ProjectResponse {
 		Description: o.Description,
 		Url:         o.Url,
 		Image:       o.Image,
+		Stacks:      o.Stacks,
 	}
 }
+
+// func convertStacksReponse(o modl)
 
 // Find All Project
 func (h *ProjectController) FindAllProjects(c *gin.Context) {
@@ -95,12 +98,9 @@ func (h *ProjectController) CreateNewProject(c *gin.Context) {
 
 	err := c.ShouldBind(&projectForm)
 	if err != nil {
-		webResponse := responses.Response{
-			Code:   http.StatusBadRequest,
-			Status: "ERROR",
-			Data:   err,
-		}
-		c.JSON(http.StatusBadRequest, webResponse)
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
 		return
 	}
 
@@ -146,12 +146,9 @@ func (h *ProjectController) EditProject(c *gin.Context) {
 
 	err := c.ShouldBind(&projectForm)
 	if err != nil {
-		webResponse := responses.Response{
-			Code:   http.StatusBadRequest,
-			Status: "ERROR",
-			Data:   err,
-		}
-		c.JSON(http.StatusBadRequest, webResponse)
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
 		return
 	}
 
