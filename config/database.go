@@ -31,7 +31,7 @@ func DatabaseConnection() *gorm.DB {
 		panic(err)
 	}
 
-	db.AutoMigrate(&models.Project{}, &models.Tech{})
+	db.AutoMigrate(&models.Project{}, &models.Tech{}, &models.Skill{})
 
 	return db
 }

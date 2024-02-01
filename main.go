@@ -6,8 +6,10 @@ import (
 	"porto-be/controllers"
 	"porto-be/models"
 	projectRepository "porto-be/repositories/project"
+	skillRepository "porto-be/repositories/skill"
 	techRepository "porto-be/repositories/tech"
 	projectService "porto-be/services/project"
+	skillService "porto-be/services/skill"
 	techService "porto-be/services/tech"
 
 	"github.com/gin-contrib/cors"
@@ -22,14 +24,17 @@ func main() {
 	// Repository
 	projectRepository := projectRepository.NewRepository(db)
 	techRepository := techRepository.NewRepository(db)
+	skillRepository := skillRepository.NewRepository(db)
 
 	// Service
 	projectService := projectService.NewService(projectRepository)
 	techService := techService.NewService(techRepository)
+	skillService := skillService.NewService(skillRepository)
 
 	// Controller
 	projectController := controllers.NewProjectController(projectService)
 	techController := controllers.NewTechController(techService)
+	skillController := controllers.NewSkillController(skillService)
 
 	// Router
 	router := gin.Default()
@@ -51,6 +56,13 @@ func main() {
 	techRouter.POST("", techController.CreateNewTech)
 	techRouter.PATCH("/:id", techController.EditTech)
 	techRouter.DELETE("/:id", techController.DeleteTech)
+
+	skillRouter := router.Group("/skill")
+	skillRouter.GET("", skillController.FindAllSkills)
+	skillRouter.GET("/:id", skillController.FindSkillByID)
+	skillRouter.POST("", skillController.CreateNewSkill)
+	skillRouter.PATCH("/:id", skillController.EditSkill)
+	skillRouter.DELETE("/:id", skillController.DeleteSkill)
 
 	fmt.Println("jeremy loves andre to the heart")
 
