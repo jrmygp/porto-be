@@ -24,17 +24,28 @@ func NewProjectController(service services.Service) *ProjectController {
 
 // Private function
 func convertProjectResponse(o models.Project) projectResponse.ProjectResponse {
+
+	var stackResponses []projectResponse.ProjectStackResponse
+
+	// Convert stacks to lowercase field names
+	for _, stack := range o.Stacks {
+		stackResponse := projectResponse.ProjectStackResponse{
+			ID:    stack.ID,
+			Title: stack.Title,
+			Image: stack.Image,
+		}
+		stackResponses = append(stackResponses, stackResponse)
+	}
+
 	return projectResponse.ProjectResponse{
 		ID:          o.ID,
 		Title:       o.Title,
 		Description: o.Description,
 		Url:         o.Url,
 		Image:       o.Image,
-		Stacks:      o.Stacks,
+		Stacks:      stackResponses,
 	}
 }
-
-// func convertStacksReponse(o modl)
 
 // Find All Project
 func (h *ProjectController) FindAllProjects(c *gin.Context) {

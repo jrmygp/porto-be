@@ -25,7 +25,7 @@ func (r *repository) FindAll() ([]models.Project, error) {
 func (r *repository) FindByID(ID int) (models.Project, error) {
 	var project models.Project
 
-	err := r.db.Find(&project, ID).Error
+	err := r.db.Preload("Stacks").Find(&project, ID).Error
 
 	return project, err
 }
