@@ -1,4 +1,4 @@
-FROM golang:alpine
+FROM golang:1.21.6-alpine
 # Tell docker to install golang
 
 WORKDIR /app
