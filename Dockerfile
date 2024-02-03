@@ -1,5 +1,4 @@
 FROM golang:1.21.6-alpine
-RUN apk add --no-cache go
 # Tell docker to install golang
 
 WORKDIR /app
@@ -17,7 +16,6 @@ RUN go get github.com/gin-contrib/cors
 
 EXPOSE 8082
 # Still no clue
-
 
 CMD ["go", "run", "main.go",]
 # After build done (container made) docker will run this command
