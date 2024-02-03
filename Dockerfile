@@ -7,7 +7,7 @@ WORKDIR /app
 COPY . .
 # Copy all file and paste it to /app (just a dot because working dir is already /app)
 
-RUN go get -u github.com/gin-gonic/ginnpm install
+RUN go get -u github.com/gin-gonic/gin
 RUN go get -u gorm.io/gorm
 RUN go get -u gorm.io/driver/mysql
 RUN go get github.com/joho/godotenv
