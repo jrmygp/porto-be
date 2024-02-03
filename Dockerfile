@@ -5,7 +5,7 @@ WORKDIR /app
 # Set working directory for docker to run commands
 
 COPY . .
-# Copy all src folder and paste it to /app (just a dot because working dir is already /app)
+# Copy all file and paste it to /app (just a dot because working dir is already /app)
 
 RUN go get -u github.com/gin-gonic/ginnpm install
 RUN go get -u gorm.io/gorm
